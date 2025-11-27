@@ -71,19 +71,26 @@ def enableProguardInReleaseBuilds = false
  * this variant is about 6MiB larger per architecture than default.
  */
 def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
-
+project.ext.vectoricons = [
+    iconFontNames: [ 'rubicon-icon-font.ttf','Roboto.ttf','Roboto_medium.ttf','Fontisto.ttf','FontAwesome5_Solid.ttf','FontAwesome5_Regular.ttf','FontAwesome5_Brands.ttf', 'FontAwesome.ttf',
+    'MaterialIcons.ttf', 'EvilIcons.ttf' , 'MaterialCommunityIcons.ttf','Ionicons.ttf',"SimpleLineIcons.ttf","AntDesign.ttf","Entypo.ttf","Octicons.ttf","Zocial.ttf","Foundation.ttf","Feather.ttf"] // Name of the font files you want to copy
+]
 android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.thanhngaofficial"
+    configurations {
+        compile.exclude group: 'com.google.zxing'
+    }
     defaultConfig {
         applicationId "com.thanhngaofficial"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        missingDimensionStrategy "store", "play"
     }
     signingConfigs {
         debug {
@@ -117,3 +124,4 @@ dependencies {
         implementation jscFlavor
     }
 }
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"

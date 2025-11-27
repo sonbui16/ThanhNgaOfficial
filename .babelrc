@@ -1,0 +1,34 @@
+{
+  "plugins": [
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
+
+    [
+      "module-resolver",
+      {
+        "alias": {
+          "src": "./src",
+          "colors": "./theme/variables/colors",
+          "variables": "./theme/variables",
+          "utils": "./src/utils",
+          "imagesApp": "./src/assets/images",
+          "assets": "./src/assets",
+          "selectors": "./src/store/selectors",
+          "actions": "./src/store/actions",
+          "store": "./src/store",
+          "container": "./src/container",
+          "components": "./src/components"
+        }
+      }
+    ]
+  ],
+  "env": {
+    "production": {
+      "plugins": ["transform-remove-console"]
+    }
+  }
+}
