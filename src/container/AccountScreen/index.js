@@ -52,12 +52,13 @@ const AccountScreen = () => {
 
   // Tạo mảng các menu item
   const menuItems = [
-    {
-      key: 'reviewApp',
-      title: 'Đánh giá ứng dụng',
-      onPress: () => checkDeviceID('reviewApp'),
-      login: true,
-    },
+    // {
+    //   key: 'reviewApp',
+    //   title: 'Đánh giá ứng dụng',
+    //   onPress: () => checkDeviceID('reviewApp'),
+    //   login: true,
+    // },
+
     // {
     //   key: 'term',
     //   title: 'Điều khoản dịch vụ',
@@ -82,7 +83,6 @@ const AccountScreen = () => {
       key: 'setting',
       title: 'Cài đặt',
       login: true,
-
       onPress: () => RouterService.navigate('Settings'),
     },
   ];

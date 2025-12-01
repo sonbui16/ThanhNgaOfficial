@@ -152,7 +152,7 @@ const RegisterScreen = ({ navigation }) => {
           paddingHorizontal: scale(20),
         }}
       >
-        <ScrollView style={{}}>
+        <ScrollView style={{}} showsVerticalScrollIndicator={false}>
           <View style={{ marginTop: 20 }}>
             <Text
               style={{

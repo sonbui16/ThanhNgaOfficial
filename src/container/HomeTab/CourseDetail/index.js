@@ -104,7 +104,7 @@ export class CourseDetail extends Component {
     try {
       initConnection().then(() => {
         const sku = item?.price_sell.toString();
-        const newSku = 'courses' + sku.replace(/000$/, '');
+        const newSku = 'thanhnga' + sku.replace(/000$/, '');
         getProducts({ skus: [newSku] }).then(res => {});
         this.purchaseUpdateSubscription = purchaseUpdatedListener(purchase => {
           const receipt = purchase.transactionReceipt;
@@ -238,15 +238,21 @@ export class CourseDetail extends Component {
 
   purchase = async () => {
     const { item } = this.props.route.params;
+    console.log('sonbh12', item);
+
     this.setState({ loadingIAP: true });
     const sku = item.price_sell.toString();
-    const newSku = 'courses' + sku.replace(/000$/, '');
+    const newSku = 'thanhnga' + sku.replace(/000$/, '');
+    console.log('newSku1', newSku);
+
     try {
       await requestPurchase({
         sku: newSku,
         andDangerouslyFinishTransactionAutomaticallyIOS: false,
       });
     } catch (err) {
+      console.log('sonbh', err);
+
       this.setState({ loadingIAP: false });
     }
   };
@@ -309,7 +315,7 @@ export class CourseDetail extends Component {
                       style={{
                         fontSize: scale(18),
                         fontWeight: 'bold',
-                        color: 'black',
+                        color: 'white',
                       }}
                     >
                       {price_sell}
@@ -321,7 +327,7 @@ export class CourseDetail extends Component {
                           textDecorationLine: 'line-through',
                           fontSize: scale(14),
                           marginLeft: scale(10),
-                          color: 'black',
+                          color: 'white',
                         }}
                       >
                         {price}

@@ -7,11 +7,10 @@ import {
   Text,
   Platform,
   Alert,
-  ImageBackground,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { scale } from 'react-native-size-scaling';
-import { Appbar, TextInput } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
 import DeviceInfo from 'react-native-device-info';
 import SHA1 from 'crypto-js/sha1';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,13 +23,12 @@ import { site_id } from 'store/api/common';
 import { isRequestPending } from 'selectors/common';
 import { setAuthState, loginSites, methodMFA } from 'store/actions/auth';
 import {
-  saveSchool,
   saveListItem,
   saveListSite,
   checkSite,
   inforSite,
 } from 'store/actions';
-import { devices, devicesLimitCheck } from 'store/actions/app';
+import { devicesLimitCheck } from 'store/actions/app';
 import FloatingLabelInput from 'components/FloatingLabelInput';
 import AuthButton from 'components/AuthButton';
 import ViewBackground from 'components/ViewBackground';
@@ -45,12 +43,7 @@ const LoginScreen = ({ navigation, route }) => {
   const [checkSaveAccount, setCheckSaveAccount] = useState(false);
   const [isShowPass, setIsShowPass] = useState(true);
   const [addDevices, setAddDevices] = useState({});
-
   const dispatch = useDispatch();
-  const loadingLoginSites = useSelector(state =>
-    isRequestPending(state, 'loginSites'),
-  );
-  const language = useSelector(state => state.app.language);
   const attachDevices = async () => {
     setAddDevices({
       ip: await DeviceInfo.getIpAddress(),
@@ -96,27 +89,35 @@ const LoginScreen = ({ navigation, route }) => {
       token: SHA1(addDevices.token).toString(),
     };
     await AsyncStorage.setItem('tokenDevices', tokenDevices.token);
-    dispatch(
-      devicesLimitCheck(
-        tokenDevices,
-        dataSite.access_token,
-        (errLimit, dataLimit) => {
-          if (!errLimit) {
-            dispatch(saveListSite(dataSite));
-            dispatch(saveListItem(site_id));
-            dispatch(setAuthState(true));
-            dispatch(checkSite(true));
-            RouterService.reset('TabNavigation');
-          } else {
-            Alert.alert('Thông báo', errLimit?.message?.message);
-          }
-        },
-      ),
-    );
-  }
-  const goSubmit = async values => {
-    console.log('values1', values);
+    // dispatch(
+    //   devicesLimitCheck(
+    //     tokenDevices,
+    //     dataSite.access_token,
+    //     (errLimit, dataLimit) => {
+    //       if (!errLimit) {
+    //         dispatch(saveListSite(dataSite));
+    //         dispatch(saveListItem(site_id));
+    //         dispatch(setAuthState(true));
+    //         dispatch(checkSite(true));
+    //         RouterService.reset('TabNavigation');
+    //       } else {
+    //         Alert.alert('Thông báo', errLimit?.message?.message);
+    //       }
+    //     },
+    //   ),
+    // );
 
+    dispatch(saveListSite(dataSite));
+    dispatch(saveListItem(site_id));
+    dispatch(setAuthState(true));
+    dispatch(checkSite(true));
+    RouterService.reset('TabNavigation');
+  }
+
+  const disButton = () => {
+    return email?.trim() === '' || password?.trim() === '';
+  };
+  const goSubmit = async values => {
     const currentBrowser = JSON.stringify({
       ip: await DeviceInfo.getIpAddress(),
       os: Platform.OS ?? '',
@@ -157,8 +158,6 @@ const LoginScreen = ({ navigation, route }) => {
             }),
           );
         } else {
-          // Alert.alert('Thông báo1', err?.message?.message);
-
           let errMess = err?.message?.message;
           if (Array.isArray(errMess)) {
             const errMessage = errMess[0]?.constraints;
@@ -270,7 +269,7 @@ const LoginScreen = ({ navigation, route }) => {
                 style={{ alignItems: 'center', marginTop: scale(10) }}
               />
             }
-            label={language === 'en' ? 'Password' : 'Mật khẩu'}
+            label={'Mật khẩu'}
             value={password}
             onChangeText={value => {
               setPassword(value);
@@ -279,7 +278,7 @@ const LoginScreen = ({ navigation, route }) => {
 
           <AuthButton
             containerStyle={{ backgroundColor: colors.blue3 }}
-            disabled={!email || !password}
+            disabled={disButton()}
             onPress={() => {
               goSubmit({
                 site_id: site_id,

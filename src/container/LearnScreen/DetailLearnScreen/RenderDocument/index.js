@@ -48,7 +48,7 @@ const RenderDocument = ({ navigation, route }) => {
       const matches = originalUrl.match(/^https?:\/\/([^\/]+)\//);
       if (!matches || matches.length < 2) return null;
 
-      const host = matches[1]; // Ví dụ: file.edubit.vn
+      const host = matches[1];
       return `https://${host}/embed/webviewer?url=${encodeURIComponent(
         originalUrl,
       )}`;

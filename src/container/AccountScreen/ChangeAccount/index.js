@@ -4,7 +4,6 @@ import { Alert, PermissionsAndroid, Platform } from 'react-native';
 
 const FileDownloadAndOpen = () => {
   // useEffect(() => {
-  //   const fileUrl = 'https://file.edubit.vn/storage/ecea7b1e0362f9230cecbf41868835c9ff1ab1e4/mo-ta-tinh-nang-goi-pro.pdf';
   //   const fileName = fileUrl.split('/').pop(); // đổi thành file bạn muốn
   //   const mimeType = getMimeType(fileName);
 
@@ -57,7 +56,7 @@ const FileDownloadAndOpen = () => {
             title: 'Cấp quyền lưu trữ',
             message: 'Ứng dụng cần quyền để lưu và mở file',
             buttonPositive: 'OK',
-          }
+          },
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
       }
@@ -66,7 +65,7 @@ const FileDownloadAndOpen = () => {
   };
 
   // 👉 Tự động xác định MIME type theo định dạng
-  const getMimeType = (fileName) => {
+  const getMimeType = fileName => {
     const extension = fileName.split('.').pop().toLowerCase();
     const types = {
       pdf: 'application/pdf',
@@ -87,5 +86,3 @@ const FileDownloadAndOpen = () => {
 };
 
 export default FileDownloadAndOpen;
-
-

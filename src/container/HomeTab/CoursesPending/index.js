@@ -120,6 +120,7 @@ const CoursesPending = () => {
   useEffect(() => {
     dispatch(
       courses(1, 90, site_id, (err, data) => {
+        console.log('sonbh2', data);
         if (err) {
         } else {
           setData(data?.data);
@@ -151,7 +152,7 @@ const CoursesPending = () => {
             fontSize: scale(16),
           }}
         >
-          Danh sách khoá học
+          Danh sách khoá học1
         </Text>
       </View>
       <FlatList
