@@ -18,6 +18,7 @@ import RNIap, {
   purchaseUpdatedListener,
   getProducts,
   requestPurchase,
+  finishTransaction,
 } from 'react-native-iap';
 
 import { isRequestPending } from 'src/store/selectors';
@@ -27,6 +28,7 @@ import {
   lessons,
   trialLessons,
   lessonsID,
+  saveReceipt,
 } from 'store/actions/app';
 import SafeAreaViews from 'components/SafeAreaView';
 import { Card, ListItem, Avatar, Icon, Rating } from '@rneui/themed';
@@ -38,8 +40,10 @@ import colors from 'variables/colors';
 
 @connect(
   state => ({
-    site: state.auth.listSite,
+    auth: state.auth.listSite,
     idSite: state.auth.infoSite,
+    loadingCheckPurchase: false,
+    loggedIn: state.auth.loggedIn,
     loading: isRequestPending(state, 'coursesDetail'),
   }),
   {
@@ -48,6 +52,7 @@ import colors from 'variables/colors';
     lessons,
     trialLessons,
     lessonsID,
+    saveReceipt,
   },
 )
 export class CourseDetail extends Component {
@@ -60,6 +65,7 @@ export class CourseDetail extends Component {
       expanded: {},
       loadingIAP: false,
       checkAssign: [],
+      checkPurchase: false,
     };
   }
   purchaseUpdateSubscription = null;
@@ -67,12 +73,12 @@ export class CourseDetail extends Component {
 
   async componentDidMount() {
     const { item } = this.props.route.params;
-    const { coursesDetail, site, teachers, trialLessons, lessonsID, idSite } =
+    const { coursesDetail, auth, teachers, trialLessons, lessonsID, idSite } =
       this.props;
     this.props.navigation.setOptions({
       headerTitle: item.seo_title || 'Chi tiết khoá học',
     });
-    coursesDetail(item._id, site.access_token, (err, data) => {
+    coursesDetail(item._id, auth.access_token, (err, data) => {
       if (!err) {
         this.setState({ data: data });
       }
@@ -95,40 +101,42 @@ export class CourseDetail extends Component {
         this.setState({ datatrialLessons: data });
       }
     });
-    lessonsID('noSearch', item._id, site.access_token, (err, data) => {
+    lessonsID('noSearch', item._id, auth.access_token, (err, data) => {
       if (!err) {
         this.setState({ checkAssign: data?.data });
       }
     });
 
-    try {
+    if (Platform.OS === 'ios') {
       initConnection().then(() => {
         const sku = item?.price_sell.toString();
         const newSku = 'thanhnga' + sku.replace(/000$/, '');
         getProducts({ skus: [newSku] }).then(res => {});
+
         this.purchaseUpdateSubscription = purchaseUpdatedListener(purchase => {
           const receipt = purchase.transactionReceipt;
-        });
-        this.purchaseErrorSubscription = purchaseErrorListener(error => {
-          this.setState({ loadingIAP: false });
-        });
-      });
-    } catch (err) {}
-
-    if (Platform.OS === 'ios') {
-      initConnection().then(() => {
-        this.purchaseUpdateSubscription = purchaseUpdatedListener(() => {
-          const receipt = purchase.transactionReceipt;
           if (receipt) {
-            yourAPI
-              .deliverOrDownloadFancyInAppPurchase(purchase.transactionReceipt)
-              .then(async deliveryResult => {
-                if (isSuccess(deliveryResult)) {
-                  await finishTransaction({ purchase, isConsumable: true });
-                  await finishTransaction({ purchase, isConsumable: false });
-                } else {
-                }
+            const { saveReceipt, auth } = this.props;
+            const paramsReceipt = {
+              purchase: {
+                productId: purchase.productId,
+                purchaseToken: '',
+                transactionReceipt: receipt,
+              },
+              appType: 'ios',
+              sandbox: true,
+              ec_id: item._id,
+            };
+            saveReceipt(paramsReceipt, auth.access_token, (err, data) => {
+              this.setState({ checkPurchase: true });
+              this.props.navigation.navigate('DetailLearnScreen', {
+                item: item,
+                dataCourse: item,
+                dataType: item,
               });
+            });
+            finishTransaction({ purchase });
+            this.setState({ loadingIAP: false });
           }
         });
         this.purchaseErrorSubscription = purchaseErrorListener(error => {
@@ -149,7 +157,7 @@ export class CourseDetail extends Component {
   }
   callAttachment = (item, dataCourse, dataType) => {
     const { lessonsID, site } = this.props;
-    lessonsID('attachment', item._id, site.access_token, (err, data) => {
+    lessonsID('attachment', item._id, auth.access_token, (err, data) => {
       if (!err) {
         this.props.navigation.navigate('DetailLearnScreen', {
           item,
@@ -222,7 +230,11 @@ export class CourseDetail extends Component {
                 width: '90%',
                 alignSelf: 'center',
               }}
-              onPress={() => this.purchase()}
+              onPress={() =>
+                this.props.loggedIn
+                  ? this.purchase()
+                  : this.props.navigation.navigate('LoginScreen')
+              }
             />
           )}
         </View>
@@ -238,12 +250,10 @@ export class CourseDetail extends Component {
 
   purchase = async () => {
     const { item } = this.props.route.params;
-    console.log('sonbh12', item);
-
+    const priceSell = parseFloat(item.price_sell);
     this.setState({ loadingIAP: true });
-    const sku = item.price_sell.toString();
+    const sku = priceSell.toString();
     const newSku = 'thanhnga' + sku.replace(/000$/, '');
-    console.log('newSku1', newSku);
 
     try {
       await requestPurchase({
@@ -251,8 +261,6 @@ export class CourseDetail extends Component {
         andDangerouslyFinishTransactionAutomaticallyIOS: false,
       });
     } catch (err) {
-      console.log('sonbh', err);
-
       this.setState({ loadingIAP: false });
     }
   };

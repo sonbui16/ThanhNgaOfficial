@@ -1,4 +1,4 @@
-import {takeLatest, all, put, take} from 'redux-saga/effects';
+import { takeLatest, all, put, take } from 'redux-saga/effects';
 import {
   GET_LOCATION,
   APP_LIST_ITEM,
@@ -55,12 +55,13 @@ import {
   APP_COURSES_MEMBERSHIP,
   APP_QUIZ_TEST,
   APP_USER_MAP_COURSE,
+  APP_SAVE_RECEIPT,
 } from '../actions/types';
 import app from '../api/app';
-import {saveProfileUser} from '../actions/app';
-import {saveInforSid, saveUseMe} from '../actions/auth';
-import {saveListItem, saveListSourceCategory} from 'actions/app';
-import {createRequestSaga} from './common';
+import { saveProfileUser } from '../actions/app';
+import { saveInforSid, saveUseMe } from '../actions/auth';
+import { saveListItem, saveListSourceCategory } from 'actions/app';
+import { createRequestSaga } from './common';
 const requestGetLocation = createRequestSaga({
   request: app.getLocation, // request được gọi trong file api/auth.js đã được defined
   key: 'getLocation',
@@ -521,7 +522,14 @@ const requestUserMapCourse = createRequestSaga({
   functionSuccess: [],
   functionFailure: [],
 });
-
+const requestSaveReceipt = createRequestSaga({
+  request: app.saveReceipt,
+  key: 'saveReceipt',
+  success: [],
+  failure: [],
+  functionSuccess: [],
+  functionFailure: [],
+});
 // root saga reducer
 export default [
   function* fetchWatcher() {
@@ -580,7 +588,7 @@ export default [
       takeLatest(APP_COURSES_MEMBERSHIP, requestCoursesMemberShip),
       takeLatest(APP_QUIZ_TEST, requestQuizTest),
       takeLatest(APP_USER_MAP_COURSE, requestUserMapCourse),
-
+      takeLatest(APP_SAVE_RECEIPT, requestSaveReceipt),
     ]);
   },
 ];

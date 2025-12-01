@@ -30,7 +30,7 @@ const ListLearnScreen = ({ navigation }) => {
         }}
       >
         <Text
-          style={{ fontSize: scale(14), textAlign: 'center', color: 'black' }}
+          style={{ fontSize: scale(14), textAlign: 'center', color: 'white' }}
         >
           Bạn chưa có khoá học nào
         </Text>

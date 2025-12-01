@@ -176,7 +176,12 @@ export default {
         },
       },
     ),
-
+  saveReceipt: (params = {}, token) =>
+    API_EDUBIT.post(`ipa/save-receipt`, params, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
   teachers: (id_teacher, params = {}) =>
     API_EDUBIT.get(`v1/teachers/${id_teacher}`, params, {
       headers: {

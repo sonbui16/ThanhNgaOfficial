@@ -152,7 +152,7 @@ const CoursesPending = () => {
             fontSize: scale(16),
           }}
         >
-          Danh sách khoá học1
+          Danh sách khoá học
         </Text>
       </View>
       <FlatList

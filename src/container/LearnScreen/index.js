@@ -5,8 +5,6 @@ import SafeAreaView from 'components/SafeAreaView';
 import CancelLogin from 'container/CancelLogin';
 import BtnLogin from 'src/components/BtnLogin';
 import ListLearnScreen from 'container/LearnScreen/ListLearnScreen';
-import ViewBackground from 'src/components/ViewBackground';
-import { Text } from 'react-native';
 @connect(
   state => ({
     site: state.auth.listSite,
